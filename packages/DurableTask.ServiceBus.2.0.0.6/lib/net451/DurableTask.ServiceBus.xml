@@ -1,0 +1,1065 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DurableTask.ServiceBus</name>
+    </assembly>
+    <members>
+        <member name="T:DurableTask.ServiceBus.Common.BrokeredMessageExtensions">
+            <summary>
+            Extension methods for BrokeredMessage
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Common.BrokeredMessageExtensions.DeliveryLatency(Microsoft.ServiceBus.Messaging.BrokeredMessage)">
+            <summary>
+            Returns delivery latency of the message
+            </summary>        
+        </member>
+        <member name="T:DurableTask.ServiceBus.ServiceBusOrchestrationService">
+            <summary>
+            Orchestration Service and Client implementation using Azure Service Bus
+            Takes an optional instance store for storing state and history
+            </summary>
+        </member>
+        <member name="F:DurableTask.ServiceBus.ServiceBusOrchestrationService.Settings">
+            <summary>
+            Orchestration service settings 
+            </summary>
+        </member>
+        <member name="F:DurableTask.ServiceBus.ServiceBusOrchestrationService.InstanceStore">
+            <summary>
+            Instance store for state and history tracking
+            </summary>
+        </member>
+        <member name="F:DurableTask.ServiceBus.ServiceBusOrchestrationService.BlobStore">
+            <summary>
+            Blob store for oversized messages and sessions
+            </summary>
+        </member>
+        <member name="F:DurableTask.ServiceBus.ServiceBusOrchestrationService.ServiceStats">
+            <summary>
+            Statistics for the orchestration service
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.#ctor(System.String,System.String,DurableTask.Core.IOrchestrationServiceInstanceStore,DurableTask.Core.Tracking.IOrchestrationServiceBlobStore,DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings)">
+            <summary>
+                Create a new ServiceBusOrchestrationService to the given service bus connection string and hubname
+            </summary>
+            <param name="connectionString">Service Bus connection string</param>
+            <param name="hubName">Hubname to use with the connection string</param>
+            <param name="instanceStore">Instance store Provider, where state and history messages will be stored</param>
+            <param name="blobStore">Blob store Provider, where oversized messages and sessions will be stored</param>
+            <param name="settings">Settings object for service and client</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.StartAsync">
+            <summary>
+            Starts the service initializing the required resources
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.StopAsync">
+            <summary>
+            Stops the orchestration service gracefully
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.StopAsync(System.Boolean)">
+            <summary>
+            Stops the orchestration service with optional forced flag
+            </summary>
+            <param name="isForced">Flag when true stops resources agresssively, when false stops gracefully</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.CreateAsync">
+            <summary>
+            Deletes and creates the neccesary resources for the orchestration service including the instance store
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.CreateAsync(System.Boolean)">
+            <summary>
+            Deletes and creates the neccesary resources for the orchestration service
+            </summary>
+            <param name="recreateInstanceStore">Flag indicating whether to drop and create instance store</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.CreateIfNotExistsAsync">
+            <summary>
+            Drops and creates the neccesary resources for the orchestration service and the instance store
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.DeleteAsync">
+            <summary>
+            Deletes the resources for the orchestration service and the instance store
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.DeleteAsync(System.Boolean)">
+            <summary>
+            Deletes the resources for the orchestration service and optionally the instance store
+            </summary>
+            <param name="deleteInstanceStore">Flag indicating whether to drop instance store</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.HubExistsAsync">
+            <summary>
+            Utility method to check if the needed resources are available for the orchestration service
+            </summary>
+            <returns>True if all needed queues are present, false otherwise</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.GetPendingOrchestrationsCount">
+            <summary>
+                Get the count of pending orchestrationsb
+            </summary>
+            <returns>Count of pending orchestrations</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.GetPendingWorkItemsCount">
+            <summary>
+                Get the count of pending work items (activities)
+            </summary>
+            <returns>Count of pending activities</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.GetQueueCount(System.String)">
+            <summary>
+                Internal method for getting the number of items in a queue
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.GetHubQueueMaxDeliveryCountsAsync">
+            <summary>
+                Internal method for getting the max delivery counts for each queue
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.IsMaxMessageCountExceeded(System.Int32,DurableTask.Core.OrchestrationRuntimeState)">
+            <summary>
+                Checks the message count against the threshold to see if a limit is being exceeded
+            </summary>
+            <param name="currentMessageCount">The current message count to check</param>
+            <param name="runtimeState">The Orchestration runtime state this message count is associated with</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.GetDelayInSecondsAfterOnProcessException(System.Exception)">
+            <summary>
+            Inspects an exception to get a custom delay based on the exception (e.g. transient) properties for a process exception
+            </summary>
+            <param name="exception">The exception to inspect</param>
+            <returns>Delay in seconds</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.GetDelayInSecondsAfterOnFetchException(System.Exception)">
+            <summary>
+            Inspects an exception to get a custom delay based on the exception (e.g. transient) properties for a fetch exception
+            </summary>
+            <param name="exception">The exception to inspect</param>
+            <returns>Delay in seconds</returns>
+        </member>
+        <member name="P:DurableTask.ServiceBus.ServiceBusOrchestrationService.TaskOrchestrationDispatcherCount">
+            <summary>
+            Gets the the number of task orchestration dispatchers
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.ServiceBusOrchestrationService.MaxConcurrentTaskOrchestrationWorkItems">
+            <summary>
+            Gets the maximum number of concurrent task orchestration items
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.LockNextTaskOrchestrationWorkItemAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+                Wait for the next orchestration work item and return the orchestration work item
+            </summary>
+            <param name="receiveTimeout">The timespan to wait for new messages before timing out</param>
+            <param name="cancellationToken">The cancellation token to cancel execution of the task</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.RenewTaskOrchestrationWorkItemLockAsync(DurableTask.Core.TaskOrchestrationWorkItem)">
+            <summary>
+                Renew the lock on an orchestration
+            </summary>
+            <param name="workItem">The task orchestration to renew the lock on</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.CompleteTaskOrchestrationWorkItemAsync(DurableTask.Core.TaskOrchestrationWorkItem,DurableTask.Core.OrchestrationRuntimeState,System.Collections.Generic.IList{DurableTask.Core.TaskMessage},System.Collections.Generic.IList{DurableTask.Core.TaskMessage},System.Collections.Generic.IList{DurableTask.Core.TaskMessage},DurableTask.Core.TaskMessage,DurableTask.Core.OrchestrationState)">
+            <summary>
+                Complete an orchestation, this atomically sends any outbound messages and completes the session for all current messages
+            </summary>
+            <param name="workItem">The task orchestration to renew the lock on</param>
+            <param name="newOrchestrationRuntimeState">New state of the orchestration to be persisted. Could be null if the orchestration is in completion.</param>
+            <param name="outboundMessages">New work item messages to be processed</param>
+            <param name="orchestratorMessages">New orchestration messages to be scheduled</param>
+            <param name="timerMessages">Delayed exection messages to be scheduled for the orchestration</param>
+            <param name="continuedAsNewMessage">Task Message to send to orchestrator queue to treat as new in order to rebuild state</param>
+            <param name="orchestrationState">The prior orchestration state</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.ReleaseTaskOrchestrationWorkItemAsync(DurableTask.Core.TaskOrchestrationWorkItem)">
+            <summary>
+                Release the lock on an orchestration, releases the session, decoupled from CompleteTaskOrchestrationWorkItemAsync to handle nested orchestrations
+            </summary>
+            <param name="workItem">The task orchestration to abandon</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.AbandonTaskOrchestrationWorkItemAsync(DurableTask.Core.TaskOrchestrationWorkItem)">
+            <summary>
+                Abandon an orchestation, this abandons ownership/locking of all messages for an orchestation and it's session
+            </summary>
+            <param name="workItem">The task orchestration to abandon</param>
+        </member>
+        <member name="P:DurableTask.ServiceBus.ServiceBusOrchestrationService.TaskActivityDispatcherCount">
+            <summary>
+            Gets the the number of task activity dispatchers
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.ServiceBusOrchestrationService.MaxConcurrentTaskActivityWorkItems">
+            <summary>
+            Gets the maximum number of concurrent task activity items
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.LockNextTaskActivityWorkItem(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+               Wait for an lock the next task activity to be processed 
+            </summary>
+            <param name="receiveTimeout">The timespan to wait for new messages before timing out</param>
+            <param name="cancellationToken">The cancellation token to cancel execution of the task</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.RenewTaskActivityWorkItemLockAsync(DurableTask.Core.TaskActivityWorkItem)">
+            <summary>
+               Renew the lock on a still processing work item
+            </summary>
+            <param name="workItem">Work item to renew the lock on</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.CompleteTaskActivityWorkItemAsync(DurableTask.Core.TaskActivityWorkItem,DurableTask.Core.TaskMessage)">
+            <summary>
+               Atomically complete a work item and send the response messages
+            </summary>
+            <param name="workItem">Work item to complete</param>
+            <param name="responseMessage">The response message to send</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.AbandonTaskActivityWorkItemAsync(DurableTask.Core.TaskActivityWorkItem)">
+            <summary>
+               Abandons a single work item and releases the lock on it
+            </summary>
+            <param name="workItem">The work item to abandon</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.CreateTaskOrchestrationAsync(DurableTask.Core.TaskMessage)">
+            <summary>
+               Create/start a new Orchestration
+            </summary>
+            <param name="creationMessage">The task message for the new Orchestration</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.UpdateJumpStartStoreAsync(DurableTask.Core.TaskMessage)">
+            <summary>
+            Writes an execution started event to the jump start table in the instance store
+            </summary>
+            <param name="creationMessage">Orchestration started message</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.SendTaskOrchestrationMessageAsync(DurableTask.Core.TaskMessage)">
+            <summary>
+               Sends an orchestration message
+            </summary>
+            <param name="message">The task message to be sent for the orchestration</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.SendTaskOrchestrationMessageBatchAsync(DurableTask.Core.TaskMessage[])">
+            <summary>
+               Sends a set of orchestration messages
+            </summary>
+            <param name="messages">The task messages to be sent for the orchestration</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.ForceTerminateTaskOrchestrationAsync(System.String,System.String)">
+            <summary>
+               Force terminates an orchestration by sending a execution terminated event
+            </summary>
+            <param name="instanceId">The instance id to terminate</param>
+            <param name="reason">The string reason for terminating</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.WaitForOrchestrationAsync(System.String,System.String,System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+                Wait for an orchestration to reach any terminal state within the given timeout
+            </summary>
+            <param name="executionId">The execution id of the orchestration</param>
+            <param name="instanceId">Instance to wait for</param>
+            <param name="timeout">Max timeout to wait</param>
+            <param name="cancellationToken">Task cancellation token</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.GetOrchestrationStateAsync(System.String,System.Boolean)">
+            <summary>
+            Get a list of orchestration states from the instance storage for the most current execution (generation) of the specified instance.
+            </summary>
+            <param name="instanceId">Instance id</param>
+            <param name="allExecutions">True if method should fetch all executions of the instance, false if the method should only fetch the most recent execution</param>
+            <returns>List of OrchestrationState objects that represents the list of orchestrations in the instance store</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.GetOrchestrationStateAsync(System.String,System.String)">
+            <summary>
+            Get a list of orchestration states from the instance storage for the specified execution (generation) of the specified instance.
+            </summary>
+            <param name="instanceId">Instance id</param>
+            <param name="executionId">Exectuion id</param>
+            <returns>The OrchestrationState of the specified instanceId or null if not found</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.GetOrchestrationHistoryAsync(System.String,System.String)">
+            <summary>
+            Get a string dump of the execution history of the specified orchestration instance specified execution (generation) of the specified instance
+            </summary>
+            <param name="instanceId">Instance id</param>
+            <param name="executionId">Exectuion id</param>
+            <returns>String with formatted JSON representing the execution history</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.PurgeOrchestrationHistoryAsync(System.DateTime,DurableTask.Core.OrchestrationStateTimeRangeFilterType)">
+            <summary>
+            Purges orchestration instance state and history for orchestrations older than the specified threshold time.
+            Also purges the blob storage.
+            </summary>
+            <param name="thresholdDateTimeUtc">Threshold date time in UTC</param>
+            <param name="timeRangeFilterType">What to compare the threshold date time against</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.IsTransientException(System.Exception)">
+            <summary>
+                Inspect an exception to see if it's a transient exception that may apply different delays
+            </summary>
+            <param name="exception">Exception to inspect</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.FetchTrackingWorkItemAsync(System.TimeSpan)">
+            <summary>
+                Wait for the next orchestration work item and return the orchestration work item
+            </summary>
+            <param name="receiveTimeout">The timespan to wait for new messages before timing out</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.CreateTrackingMessagesAsync(DurableTask.Core.OrchestrationRuntimeState,System.Int64)">
+            <summary>
+                Creates a list of tracking message for the supplied orchestration state
+            </summary>
+            <param name="runtimeState">The orchestation runtime state</param>
+            <param name="sequenceNumber">Sequence number for the created tracking messages</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.ServiceBusOrchestrationService.ProcessTrackingWorkItemAsync(DurableTask.Core.TrackingWorkItem)">
+            <summary>
+                Process a tracking work item, sending to storage and releasing
+            </summary>
+            <param name="workItem">The tracking work item to process</param>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Settings.JumpStartSettings">
+            <summary>
+                Settings to configure the Jumpstart manager
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.JumpStartSettings.JumpStartEnabled">
+            <summary>
+                Boolean indicating whether to enable the jumpstart manager or not.
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.JumpStartSettings.Interval">
+            <summary>
+                Time frequency for the jumpstart manager to poll
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.JumpStartSettings.IgnoreWindow">
+            <summary>
+                Window of time to ignore when polling to allow messages to process
+            </summary>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Settings.ServiceBusMessageSenderSettings">
+            <summary>
+                Settings to configure the Service Bus message sender
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusMessageSenderSettings.BatchFlushIntervalInMilliSecs">
+            <summary>
+               The sender batch flush interval in millisecs
+            </summary>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Settings.ServiceBusMessageSettings">
+            <summary>
+                Settings to configure the Service Bus message.
+                TODO: add a flag OverflowEnabled to indicate if the overflow settings are enabled
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusMessageSettings.MessageOverflowThresholdInBytes">
+            <summary>
+                The max allowed message size in service bus. Default is 170K.
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusMessageSettings.MessageMaxSizeInBytes">
+            <summary>
+               The max allowed message size for external storage. Default is 10M.
+            </summary>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings">
+            <summary>
+                Configuration for various TaskHubWorker options
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.#ctor">
+            <summary>
+                Create a TaskHubWorkerSettings object with default settings
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.MaxTaskOrchestrationDeliveryCount">
+            <summary>
+                Maximum number of times the task orchestration dispatcher will try to
+                process an orchestration message before giving up
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.MaxTaskActivityDeliveryCount">
+            <summary>
+                Maximum number of times the task activity dispatcher will try to
+                process an orchestration message before giving up
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.MaxTrackingDeliveryCount">
+            <summary>
+                Maximum number of times the tracking dispatcher will try to
+                process an orchestration message before giving up
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.MaxQueueSizeInMegabytes">
+            <summary>
+                Maximum queue size, in megabytes, for the service bus queues
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.PrefetchCount">
+            <summary>
+            Gets the message prefetch count
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.IntervalBetweenRetriesSecs">
+            <summary>
+            Gets the default interval in settings between retries
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.MaxRetries">
+            <summary>
+            Gets the max retries
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.JumpStartSettings">
+            <summary>
+            Settings for the JumpStartManager
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.TaskOrchestrationDispatcherSettings">
+            <summary>
+                Settings to configure the Task Orchestration Dispatcher
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.TaskActivityDispatcherSettings">
+            <summary>
+                Settings to configure the Task Activity Dispatcher
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.TrackingDispatcherSettings">
+            <summary>
+                Settings to configure the Tracking Dispatcher
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.MessageCompressionSettings">
+            <summary>
+                Enable compression of messages. Allows exchange of larger parameters and return values with activities at the cost
+                of additional CPU.
+                Default is false.
+                TODO: move this setting into ServiceBusSessionSettings and ServiceBusMessageSettings.
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.SessionSettings">
+            <summary>
+                Settings to configure the session
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.MessageSettings">
+            <summary>
+                Settings to configure the message
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusOrchestrationServiceSettings.MessageSenderSettings">
+            <summary>
+                Settings to configure the message senders
+            </summary>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Settings.ServiceBusSessionSettings">
+            <summary>
+                Settings to configure the Service Bus session.
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusSessionSettings.SessionOverflowThresholdInBytes">
+            <summary>
+                The max allowed session size in service bus. Default is 230K.
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Settings.ServiceBusSessionSettings.SessionMaxSizeInBytes">
+            <summary>
+                The max allowed session size for external storage. Default is 10M.
+            </summary>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Stats.ServiceBusOrchestrationServiceStats">
+            <summary>
+            Stats for the ServiceBusOrchestrationService
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Stats.ServiceBusOrchestrationServiceStats.#ctor">
+            <summary>
+            Creates a new instance of the ServiceBusOrchestrationServiceStats class
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Stats.ServiceBusOrchestrationServiceStats.OrchestrationDispatcherStats">
+            <summary>
+            The orchestration dispatcher queue stats
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Stats.ServiceBusOrchestrationServiceStats.ActivityDispatcherStats">
+            <summary>
+            The activity dispatcher queue stats
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Stats.ServiceBusOrchestrationServiceStats.TrackingDispatcherStats">
+            <summary>
+            The tracking dispatcher queue stats
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Stats.ServiceBusOrchestrationServiceStats.ToString">
+            <summary>
+            Returns a string that represents the stats for each queue.
+            </summary>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Stats.ServiceBusQueueStats">
+            <summary>
+            Stats container for a Service Bus queue
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Stats.ServiceBusQueueStats.MessagesSent">
+            <summary>
+            The number of actual messages sent
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Stats.ServiceBusQueueStats.MessagesReceived">
+            <summary>
+            The number of actual messages received
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Stats.ServiceBusQueueStats.MessageBatchesSent">
+            <summary>
+            The number of batches sent
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Stats.ServiceBusQueueStats.MessageBatchesReceived">
+            <summary>
+            The number of batches received
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Stats.ServiceBusQueueStats.SessionsRenewed">
+            <summary>
+            The number of messages renewed
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Stats.ServiceBusQueueStats.SessionsReceived">
+            <summary>
+            The number of sessions received
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Stats.ServiceBusQueueStats.SessionBatchesCompleted">
+            <summary>
+            The number of session batches completed
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Stats.ServiceBusQueueStats.SessionSets">
+            <summary>
+            The number of session state sets
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Stats.ServiceBusQueueStats.SessionGets">
+            <summary>
+            The number of session state gets
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Stats.ServiceBusQueueStats.ToString">
+            <summary>
+            Returns a string that represents the Queue Stats.
+            </summary>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Tracking.AzureStorageBlobStore">
+            <summary>
+            Azure blob storage to allow save and load large blobs, such as message and session, as a stream using Azure blob container.
+            </summary>
+        </member>
+        <member name="F:DurableTask.ServiceBus.Tracking.AzureStorageBlobStore.blobClient">
+            <summary>
+            The client to access and manage the blob store
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureStorageBlobStore.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new AzureStorageBlobStore using the supplied hub name and connection string
+            </summary>
+            <param name="hubName">The hub name for this store</param>
+            <param name="connectionString">Azure storage connection string</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureStorageBlobStore.BuildMessageBlobKey(DurableTask.Core.OrchestrationInstance,System.DateTime)">
+            <summary>
+            Create a blob storage access key based on the orchestrationInstance.
+            This key will be used to save and load the stream message in external storage when it is too large.
+            </summary>
+            <param name="orchestrationInstance">The orchestration instance.</param>
+            <param name="messageFireTime">The message fire time.</param>
+            <returns>The created blob key.</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureStorageBlobStore.BuildSessionBlobKey(System.String)">
+            <summary>
+            Create a blob storage access key based on message session.
+            This key will be used to save and load the stream in external storage when it is too large.
+            </summary>
+            <param name="sessionId">The message session Id.</param>
+            <returns>A blob key.</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureStorageBlobStore.SaveStreamAsync(System.String,System.IO.Stream)">
+            <summary>
+            Save the stream of the message or seesion using key.
+            </summary>
+            <param name="blobKey">The blob key.</param>
+            <param name="stream">The stream of the message or session.</param>
+            <returns></returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureStorageBlobStore.LoadStreamAsync(System.String)">
+            <summary>
+            Load the stream of message or seesion from storage using key.
+            </summary>
+            <param name="blobKey">The blob key.</param>
+            <returns>The saved stream message or session.</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureStorageBlobStore.DeleteStoreAsync">
+            <summary>
+            Deletes the Azure blob storage
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureStorageBlobStore.PurgeExpiredBlobsAsync(System.DateTime)">
+            <summary>
+            Purges history from storage for a given time threshold
+            </summary>
+            <param name="thresholdDateTimeUtc">The datetime in UTC to use as the threshold for purging history</param>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Tracking.AzureTableCompositeTableEntity">
+            <summary>
+            Abstract class for composite entities for Azure table
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableCompositeTableEntity.TaskTimeStamp">
+            <summary>
+            Gets or sets the task timestamp on the entity
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableCompositeTableEntity.PartitionKey">
+            <summary>
+            Gets or sets the entity partition key
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableCompositeTableEntity.RowKey">
+            <summary>
+            Gets or sets the entity row key
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableCompositeTableEntity.Timestamp">
+            <summary>
+            Gets or sets the row timestamp
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableCompositeTableEntity.ETag">
+            <summary>
+            Gets or sets the entity etag
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableCompositeTableEntity.ReadEntity(System.Collections.Generic.IDictionary{System.String,Microsoft.WindowsAzure.Storage.Table.EntityProperty},Microsoft.WindowsAzure.Storage.OperationContext)">
+            <summary>
+            Read an entity properties based on the supplied dictionary or entity properties
+            </summary>
+            <param name="properties">Dictionary of properties to read for the entity</param>
+            <param name="operationContext">The operation context</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableCompositeTableEntity.WriteEntity(Microsoft.WindowsAzure.Storage.OperationContext)">
+            <summary>
+            Write an entity to a dictionary of entity properties
+            </summary>
+            <param name="operationContext">The operation context</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableCompositeTableEntity.GetValue``1(System.String,System.Collections.Generic.IDictionary{System.String,Microsoft.WindowsAzure.Storage.Table.EntityProperty},System.Func{Microsoft.WindowsAzure.Storage.Table.EntityProperty,``0})">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore">
+            <summary>
+            Azure Table Instance store provider to allow storage and lookup for orchestration state event history with query support
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new AzureTableInstanceStore using the supplied hub name and table connection string
+            </summary>
+            <param name="hubName">The hubname for this instance store</param>
+            <param name="tableConnectionString">Azure table connection string</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.InitializeStoreAsync(System.Boolean)">
+            <summary>
+            Runs initialization to prepare the storage for use
+            </summary>
+            <param name="recreateStorage">Flag to indicate whether the storage should be recreated.</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.DeleteStoreAsync">
+            <summary>
+            Deletes instances storage
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.MaxHistoryEntryLength">
+            <summary>
+            Gets the maximum length a history entry can be so it can be truncated if neccesary
+            </summary>
+            <returns>The maximum length</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.WriteEntitiesAsync(System.Collections.Generic.IEnumerable{DurableTask.Core.Tracking.InstanceEntityBase})">
+            <summary>
+            Writes a list of history events to storage with retries for transient errors
+            </summary>
+            <param name="entities">List of history events to write</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.GetEntitiesAsync(System.String,System.String)">
+            <summary>
+            Get a list of state events from instance store
+            </summary>
+            <param name="instanceId">The instance id to return state for</param>
+            <param name="executionId">The execution id to return state for</param>
+            <returns>The matching orchestation state or null if not found</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.DeleteEntitiesAsync(System.Collections.Generic.IEnumerable{DurableTask.Core.Tracking.InstanceEntityBase})">
+            <summary>
+            Deletes a list of history events from storage with retries for transient errors
+            </summary>
+            <param name="entities">List of history events to delete</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.GetOrchestrationStateAsync(System.String,System.Boolean)">
+            <summary>
+            Gets a list of orchestration states for a given instance
+            </summary>
+            <param name="instanceId">The instance id to return state for</param>
+            <param name="allInstances">Flag indiciation whether to get all history execution ids or just the most recent</param>
+            <returns>List of matching orchestration states</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.GetOrchestrationStateAsync(System.String,System.String)">
+            <summary>
+            Gets the orchestration state for a given instance and execution id
+            </summary>
+            <param name="instanceId">The instance id to return state for</param>
+            <param name="executionId">The execution id to return state for</param>
+            <returns>The matching orchestation state or null if not found</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.GetOrchestrationHistoryEventsAsync(System.String,System.String)">
+            <summary>
+            Gets the list of history events for a given instance and execution id
+            </summary>
+            <param name="instanceId">The instance id to return history for</param>
+            <param name="executionId">The execution id to return history for</param>
+            <returns>List of history events</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.QueryOrchestrationStatesAsync(DurableTask.Core.OrchestrationStateQuery)">
+            <summary>
+                Get a list of orchestration states from the instance storage table which match the specified
+                orchestration state query.
+            </summary>
+            <param name="stateQuery">Orchestration state query to execute</param>
+            <returns></returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.QueryOrchestrationStatesSegmentedAsync(DurableTask.Core.OrchestrationStateQuery,System.String)">
+            <summary>
+                Get a segmented list of orchestration states from the instance storage table which match the specified
+                orchestration state query. Segment size is controlled by the service.
+            </summary>
+            <param name="stateQuery">Orchestration state query to execute</param>
+            <param name="continuationToken">The token returned from the last query execution. Can be null for the first time.</param>
+            <returns></returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.QueryOrchestrationStatesSegmentedAsync(DurableTask.Core.OrchestrationStateQuery,System.String,System.Int32)">
+            <summary>
+                Get a segmented list of orchestration states from the instance storage table which match the specified
+                orchestration state query.
+            </summary>
+            <param name="stateQuery">Orchestration state query to execute</param>
+            <param name="continuationToken">The token returned from the last query execution. Can be null for the first time.</param>
+            <param name="count">Count of elements to return. Service will decide how many to return if set to -1.</param>
+            <returns></returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.PurgeOrchestrationHistoryEventsAsync(System.DateTime,DurableTask.Core.OrchestrationStateTimeRangeFilterType)">
+            <summary>
+            Purges history from storage for given time range
+            </summary>
+            <param name="thresholdDateTimeUtc">The datetime in UTC to use as the threshold for purging history</param>
+            <param name="timeRangeFilterType">What to compare the threshold date time against</param>
+            <returns>The number of history events purged.</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.WriteJumpStartEntitiesAsync(System.Collections.Generic.IEnumerable{DurableTask.Core.Tracking.OrchestrationJumpStartInstanceEntity})">
+            <summary>
+            Writes a list of jump start events to instance store
+            </summary>
+            <param name="entities">List of jump start events to write</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.DeleteJumpStartEntitiesAsync(System.Collections.Generic.IEnumerable{DurableTask.Core.Tracking.OrchestrationJumpStartInstanceEntity})">
+            <summary>
+            Deletes a list of jump start events from instance store
+            </summary>
+            <param name="entities">List of jump start events to delete</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableInstanceStore.GetJumpStartEntitiesAsync(System.Int32)">
+            <summary>
+            Get a list of jump start events from instance store
+            </summary>
+            <returns>List of jump start events</returns>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationHistoryEventEntity">
+            <summary>
+            History Tracking entity for orchestration history events
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationHistoryEventEntity.#ctor">
+            <summary>
+            Creates a new AzureTableOrchestrationHistoryEventEntity 
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationHistoryEventEntity.#ctor(System.String,System.String,System.Int64,System.DateTime,DurableTask.Core.History.HistoryEvent)">
+            <summary>
+            Creates a new AzureTableOrchestrationHistoryEventEntity with supplied parameters
+            </summary>
+            <param name="instanceId">The orchestation instance id</param>
+            <param name="executionId">The orchestration execution id</param>
+            <param name="sequenceNumber">Sequence number for ordering events</param>
+            <param name="taskTimeStamp">Timestamp of history event</param>
+            <param name="historyEvent">The history event details</param>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationHistoryEventEntity.InstanceId">
+            <summary>
+            Gets or set the instance id of the orchestration
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationHistoryEventEntity.ExecutionId">
+            <summary>
+            Gets or set the execution id of the orchestration
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationHistoryEventEntity.SequenceNumber">
+            <summary>
+            Gets or set the sequence number for ordering events
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationHistoryEventEntity.HistoryEvent">
+            <summary>
+            Gets or set the history event detail for the tracking entity
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationHistoryEventEntity.WriteEntity(Microsoft.WindowsAzure.Storage.OperationContext)">
+            <summary>
+            Write an entity to a dictionary of entity properties
+            </summary>
+            <param name="operationContext">The operation context</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationHistoryEventEntity.ReadEntity(System.Collections.Generic.IDictionary{System.String,Microsoft.WindowsAzure.Storage.Table.EntityProperty},Microsoft.WindowsAzure.Storage.OperationContext)">
+            <summary>
+            Read an entity properties based on the supplied dictionary or entity properties
+            </summary>
+            <param name="properties">Dictionary of properties to read for the entity</param>
+            <param name="operationContext">The operation context</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationHistoryEventEntity.ToString">
+            <summary>
+            Returns a string that represents the current object.
+            </summary>
+            <returns>
+            A string that represents the current object.
+            </returns>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationJumpStartEntity">
+            <summary>
+            History Tracking Entity for orchestration jump start event
+            </summary>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationJumpStartEntity.JumpStartTime">
+            <summary>
+            Gets or sets the datetime for the jumpstart event
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationJumpStartEntity.#ctor">
+            <summary>
+            Creates a new AzureTableOrchestrationJumpStartEntity
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationJumpStartEntity.#ctor(DurableTask.Core.Tracking.OrchestrationJumpStartInstanceEntity)">
+            <summary>
+            Creates a new AzureTableOrchestrationJumpStartEntity with the jumpstart state and datetime
+            </summary>
+            <param name="jumpStartEvent"></param>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationJumpStartEntity.OrchestrationJumpStartInstanceEntity">
+            <summary>
+            Gets a OrchestrationJumpStartInstanceEntity
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationJumpStartEntity.WriteEntity(Microsoft.WindowsAzure.Storage.OperationContext)">
+            <summary>
+            Write an entity to a dictionary of entity properties
+            </summary>
+            <param name="operationContext">The operation context</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationJumpStartEntity.ReadEntity(System.Collections.Generic.IDictionary{System.String,Microsoft.WindowsAzure.Storage.Table.EntityProperty},Microsoft.WindowsAzure.Storage.OperationContext)">
+            <summary>
+            Read an entity properties based on the supplied dictionary or entity properties
+            </summary>
+            <param name="properties">Dictionary of properties to read for the entity</param>
+            <param name="operationContext">The operation context</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationJumpStartEntity.GetPartitionKey(System.DateTime)">
+            <summary>
+            Get a partition key based on a datetime
+            </summary>
+            <param name="dateTime">The datetime to use for the partition key</param>
+            <returns>A string partition key</returns>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationStateEntity">
+            <summary>
+            History Tracking Entity for an orchestration's state
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationStateEntity.#ctor">
+            <summary>
+            Creates a new AzureTableOrchestrationStateEntity
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationStateEntity.#ctor(DurableTask.Core.OrchestrationState)">
+            <summary>
+            Creates a new AzureTableOrchestrationStateEntity with the supplied orchestration state
+            </summary>
+            <param name="state">The orchestration state</param>
+        </member>
+        <member name="P:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationStateEntity.State">
+            <summary>
+            Gets or sets the orchestraion state for the entity
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationStateEntity.WriteEntity(Microsoft.WindowsAzure.Storage.OperationContext)">
+            <summary>
+            Write an entity to a dictionary of entity properties
+            </summary>
+            <param name="operationContext">The operation context</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationStateEntity.ReadEntity(System.Collections.Generic.IDictionary{System.String,Microsoft.WindowsAzure.Storage.Table.EntityProperty},Microsoft.WindowsAzure.Storage.OperationContext)">
+            <summary>
+            Read an entity properties based on the supplied dictionary or entity properties
+            </summary>
+            <param name="properties">Dictionary of properties to read for the entity</param>
+            <param name="operationContext">The operation context</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.AzureTableOrchestrationStateEntity.ToString">
+            <summary>
+            Returns a string that represents the current object.
+            </summary>
+            <returns>
+            A string that represents the current object.
+            </returns>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Tracking.BlobStorageClient">
+            <summary>
+            A client to access the Azure blob storage.
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClient.#ctor(System.String,System.String)">
+            <summary>
+            Construct a blob storage client instance with hub name and connection string
+            </summary>
+            <param name="hubName">The hub name</param>
+            <param name="connectionString">The connection string</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClient.UploadStreamBlobAsync(System.String,System.IO.Stream)">
+            <summary>
+            Upload the stream into the blob storage using the specified key.
+            </summary>
+            <param name="key">The key to uniquely locate and access the blob</param>
+            <param name="stream">The stream to be uploaded</param>
+            <returns></returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClient.DownloadStreamAsync(System.String)">
+            <summary>
+            Download the blob from the storage using key.
+            </summary>
+            <param name="key">The key to uniquely locate and access the blob</param>
+            <returns>A downloaded stream</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClient.ListContainers">
+            <summary>
+            List all containers of the blob storage, whose prefix is containerNamePrefix, i.e., {hubName}-dtfx.
+            </summary>
+            <returns>A list of Azure blob containers</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClient.DeleteExpiredContainersAsync(System.DateTime)">
+            <summary>
+            Delete all contianers that are older than the input threshold date.
+            </summary>
+            <param name="thresholdDateTimeUtc">The specified date threshold</param>
+            <returns></returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClient.DeleteBlobStoreContainersAsync">
+            <summary>
+            Delete blob containers with the containerNamePrefix as prefix.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:DurableTask.ServiceBus.Tracking.BlobStorageClientHelper">
+            <summary>
+            A helper class for the Azure blob storage client.
+            </summary>
+        </member>
+        <member name="F:DurableTask.ServiceBus.Tracking.BlobStorageClientHelper.KeyDelimiter">
+            <summary>
+            the blob storage accesss key is in the format of {DateTime}|{blobName}
+            </summary>
+        </member>
+        <member name="F:DurableTask.ServiceBus.Tracking.BlobStorageClientHelper.BlobNameDelimiter">
+            <summary>
+            the delimiter shown in the blob name as the file path
+            </summary>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClientHelper.BuildMessageBlobKey(System.String,System.String,System.DateTime)">
+            <summary>
+            Build a blob key for the message.
+            </summary>
+            <param name="instanceId">The orchestration instance Id</param>
+            <param name="executionId">The orchestration execution Id</param>
+            <param name="messageFireTime">The message fire time. If it is DateTime.MinValue, use current date.</param>
+            <returns>The constructed blob key for message</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClientHelper.BuildContainerNamePrefix(System.String)">
+            <summary>
+            Build the container name prefix using the lower case hub name.
+            It is in the format of {hubName}-dtfx.
+            The container name prefix is not part of the generated blob key.
+            </summary>
+            <param name="hubName">The hub name. Converted to lower case to build the prefix.</param>
+            <returns>The container name prefix</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClientHelper.BuildSessionBlobKey(System.String)">
+            <summary>
+            Build a blob key for the session.
+            </summary>
+            <param name="sessionId">The session Id</param>
+            <returns>The constructed blob key for session</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClientHelper.ParseKey(System.String,System.String@,System.String@)">
+            <summary>
+            Parse the key for the container name suffix and the blob name.
+            </summary>
+            <param name="key">The input blob key</param>
+            <param name="containerNameSuffix">The parsed container name suffix as output</param>
+            <param name="blobName">The parsed blob name as output</param>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClientHelper.IsValidContainerNameSuffix(System.String)">
+            <summary>
+            Validate the container name suffix.
+            Container name suffix can contain only lower case letters, numbers, and the dash (-) character.
+            </summary>
+            <param name="containerNameSuffix"></param>
+            <returns>True if the container name suffix is valid.</returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClientHelper.IsContainerExpired(System.String,System.DateTime)">
+            <summary>
+            Check if the container is expired.
+            </summary>
+            <param name="containerName">The container name</param>
+            <param name="thresholdDateTimeUtc">The specified date threshold</param>
+            <returns></returns>
+        </member>
+        <member name="M:DurableTask.ServiceBus.Tracking.BlobStorageClientHelper.BuildContainerName(System.String,System.String)">
+            <summary>
+            Build a container name using prefix and suffix.
+            </summary>
+            <param name="prefix">The container name prefix</param>
+            <param name="suffix">The container name suffix</param>
+            <returns>The container name</returns>
+        </member>
+    </members>
+</doc>
